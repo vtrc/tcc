@@ -1,4 +1,4 @@
-import { Component, signal } from '@angular/core';
+import { Component, signal, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { LayoutComponent } from '../../ui/layout.component';
 import { CardComponent } from '../../ui/card.component';
@@ -34,10 +34,11 @@ import { DashboardApi } from '../../data/dashboard.api';
   `,
 })
 export class ReviewPage {
+  private session = inject(SessionStore);
+  private dashboardApi = inject(DashboardApi);
+
   dash = signal<any | null>(null);
   error = signal<string | null>(null);
-
-  constructor(private session: SessionStore, private dashboardApi: DashboardApi) {}
 
   async ngOnInit() {
     await this.refresh();

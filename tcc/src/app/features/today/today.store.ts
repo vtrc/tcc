@@ -1,18 +1,16 @@
-import { Injectable, signal } from '@angular/core';
+import { Injectable, signal, inject } from '@angular/core';
 import { DashboardApi } from '../../data/dashboard.api';
 import { Dashboard } from '../../data/models';
 import { SessionStore } from '../../core/session.store';
 
 @Injectable({ providedIn: 'root' })
 export class TodayStore {
+  private session = inject(SessionStore);
+  private dashboardApi = inject(DashboardApi);
+
   dashboard = signal<Dashboard | null>(null);
   loading = signal(false);
   error = signal<string | null>(null);
-
-  constructor(
-    private session: SessionStore,
-    private dashboardApi: DashboardApi
-  ) {}
 
   async load() {
     this.loading.set(true);

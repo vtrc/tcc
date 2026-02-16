@@ -1,4 +1,4 @@
-import { Component, signal } from '@angular/core';
+import { Component, signal, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -63,6 +63,11 @@ import { LookupsApi, LookupItem } from '../../data/lookups.api';
   `],
 })
 export class LogPage {
+  private session = inject(SessionStore);
+  private entriesApi = inject(EntriesApi);
+  private lookups = inject(LookupsApi);
+  private router = inject(Router);
+
   situation = '';
   thought = '';
   avoidance = '';
@@ -77,13 +82,6 @@ export class LogPage {
 
   distortions = signal<LookupItem[]>([]);
   emotions = signal<LookupItem[]>([]);
-
-  constructor(
-    private session: SessionStore,
-    private entriesApi: EntriesApi,
-    private lookups: LookupsApi,
-    private router: Router
-  ) {}
 
   async ngOnInit() {
     this.distortions.set(await this.lookups.distortions());

@@ -27,6 +27,10 @@ export const routes: Routes = [
         path: 'review',
         loadComponent: () => import('./features/review/review.page').then(m => m.ReviewPage),
       },
+      {
+  path: 'auth/callback',
+  loadComponent: () => import('./features/auth/callback.page').then(m => m.AuthCallbackPage),
+}
     ],
   },
   { path: '**', redirectTo: '' },

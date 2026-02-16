@@ -4,7 +4,12 @@ import { supabase } from './supabase.client';
 @Injectable({ providedIn: 'root' })
 export class AuthApi {
   async signInWithOtp(email: string) {
-    const { error } = await supabase.auth.signInWithOtp({ email });
+    const { error } = await supabase.auth.signInWithOtp({
+  email,
+  options: {
+    emailRedirectTo: `${window.location.origin}/auth/callback`
+  }
+});
     if (error) throw error;
   }
 

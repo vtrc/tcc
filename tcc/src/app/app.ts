@@ -10,7 +10,6 @@ import { ErrorHudComponent } from './ui/error-hud.component';
   imports: [RouterOutlet, ErrorHudComponent],
   selector: 'app-root',
   template: `
-  hola
   <router-outlet />
   <app-error-hud />
   `,
@@ -18,11 +17,10 @@ import { ErrorHudComponent } from './ui/error-hud.component';
 export class App {
   private session = inject(SessionStore);
   private router = inject(Router);
+  private store = inject(ErrorStore);
 
   constructor() {
-
-    const store = inject(ErrorStore);
-    installGlobalErrorCapture(store)
+    installGlobalErrorCapture(this.store)
     // Inicializa sesión al cargar la app
     this.session.init();
 

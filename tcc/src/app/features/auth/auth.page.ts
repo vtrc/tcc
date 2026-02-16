@@ -1,4 +1,4 @@
-import { Component, signal } from '@angular/core';
+import { Component, signal, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { AuthApi } from '../../core/auth.api';
@@ -39,16 +39,14 @@ import { ButtonComponent } from '../../ui/button.component';
   `],
 })
 export class AuthPage {
+  private authApi = inject(AuthApi);
+  private session = inject(SessionStore);
+  private router = inject(Router);
+
   email = '';
   loading = signal(false);
   msg = signal<string | null>(null);
   err = signal<string | null>(null);
-
-  constructor(
-    private authApi: AuthApi,
-    private session: SessionStore,
-    private router: Router
-  ) {}
 
   async sendOtp() {
     this.loading.set(true);

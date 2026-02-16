@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { TodayStore } from './today.store';
@@ -81,7 +81,9 @@ import { ButtonComponent } from '../../ui/button.component';
   `,
 })
 export class TodayPage {
-  constructor(public store: TodayStore, private actionsApi: ActionsApi) {}
+  store = inject(TodayStore);
+  private actionsApi = inject(ActionsApi);
+
   ngOnInit() { this.store.load(); }
 
   async done(id: string) {

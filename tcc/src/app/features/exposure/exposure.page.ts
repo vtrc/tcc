@@ -1,4 +1,4 @@
-import { Component, signal } from '@angular/core';
+import { Component, signal, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -64,6 +64,13 @@ import { LookupsApi, LookupItem } from '../../data/lookups.api';
   `],
 })
 export class ExposurePage {
+  private route = inject(ActivatedRoute);
+  private router = inject(Router);
+  private session = inject(SessionStore);
+  private actionsApi = inject(ActionsApi);
+  private exposuresApi = inject(ExposuresApi);
+  private lookups = inject(LookupsApi);
+
   actionId = signal<string>('');
   safety = signal<LookupItem[]>([]);
   selectedSafety = signal<Set<string>>(new Set());
@@ -76,15 +83,6 @@ export class ExposurePage {
 
   saving = signal(false);
   error = signal<string | null>(null);
-
-  constructor(
-    private route: ActivatedRoute,
-    private router: Router,
-    private session: SessionStore,
-    private actionsApi: ActionsApi,
-    private exposuresApi: ExposuresApi,
-    private lookups: LookupsApi
-  ) {}
 
   async ngOnInit() {
     this.actionId.set(this.route.snapshot.paramMap.get('actionId') ?? '');
