@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Tcc</title>
+  <base href="/">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="icon" type="image/x-icon" href="favicon.ico">
+  <script>
+  (function () {
+    // Evita spamear alerts infinitamente
+    let lastMsg = "";
+    let lastAt = 0;
+    function shouldAlert(msg) {
+      const now = Date.now();
+      if (msg === lastMsg && (now - lastAt) < 1500) return false;
+      lastMsg = msg; lastAt = now;
+      return true;
+    }
+
+    function showAlert(title, message, stack) {
+      const text =
+        title + "\n\n" +
+        (message || "") +
+        (stack ? "\n\nSTACK:\n" + stack : "");
+      if (shouldAlert(text)) alert(text);
+    }
+
+    // 1) Errores síncronos (uncaught)
+    window.onerror = function (message, source, lineno, colno, error) {
+      showAlert(
+        "JS ERROR (window.onerror)",
+        String(message) + " (" + source + ":" + lineno + ":" + colno + ")",
+        error && error.stack ? error.stack : null
+      );
+      return false;
+    };
+
+    // 2) Errores en recursos/script (captura global)
+    window.addEventListener("error", function (ev) {
+      // Algunos "error events" no traen stack (p.ej. carga de script)
+      if (ev && ev.message) {
+        showAlert("JS ERROR (event)", ev.message, ev.error && ev.error.stack ? ev.error.stack : null);
+      }
+    }, true);
+
+    // 3) Promesas no manejadas
+    window.addEventListener("unhandledrejection", function (event) {
+      const r = event.reason;
+      showAlert(
+        "UNHANDLED PROMISE REJECTION",
+        r && r.message ? r.message : String(r),
+        r && r.stack ? r.stack : null
+      );
+    });
+
+    // 4) Intercepta console.error y console.warn (aquí cae MUCHO de Angular)
+    const origError = console.error.bind(console);
+    console.error = function () {
+      try {
+        const msg = Array.from(arguments).map(a => {
+          if (a instanceof Error) return a.message;
+          if (typeof a === "string") return a;
+          try { return JSON.stringify(a); } catch { return String(a); }
+        }).join(" ");
+        const errObj = Array.from(arguments).find(a => a instanceof Error);
+        showAlert("console.error", msg, errObj && errObj.stack ? errObj.stack : null);
+      } catch {}
+      origError.apply(console, arguments);
+    };
+
+    const origWarn = console.warn.bind(console);
+    console.warn = function () {
+      try {
+        const msg = Array.from(arguments).map(a => typeof a === "string" ? a : String(a)).join(" ");
+        showAlert("console.warn", msg, null);
+      } catch {}
+      origWarn.apply(console, arguments);
+    };
+  })();
+</script>
+</head>
+<body>
+  <app-root></app-root>
+</body>
+</html>
